@@ -1,6 +1,6 @@
 import TodoItem from "./TodoItem";
 
-function Todos({ todos, completeTodo, deleteTodo, setTitle, setDescription }) {
+function Todos({ todos, completeTodo, deleteTodo, hideTodo, setTitle, setDescription }) {
   return todos
     .slice()
     .reverse()
@@ -13,6 +13,7 @@ function Todos({ todos, completeTodo, deleteTodo, setTitle, setDescription }) {
         completed={todo.completed}
         completeTodo={completeTodo}
         deleteTodo={deleteTodo}
+        hideTodo={hideTodo}
         setTitle={setTitle}
         setDescription={setDescription}
       />

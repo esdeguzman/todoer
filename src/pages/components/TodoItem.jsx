@@ -8,6 +8,7 @@ function TodoItem({
   completed,
   completeTodo,
   deleteTodo,
+  hideTodo,
   setTitle,
   setDescription,
 }) {
@@ -30,11 +31,11 @@ function TodoItem({
     }
   };
 
-  const handleDelete = () => {
+  const handleFadeOut = (callback, delay) => {
     setFadeOut("fade-out");
     setTimeout(() => {
-      deleteTodo(id);
-    }, 400);
+      callback(id);
+    }, delay);
   };
 
   const checkCompletedStatus = () => {
@@ -74,13 +75,23 @@ function TodoItem({
           <div
             className={
               completed
-                ? "text-xl font-semibold mb-2 text-gray-200"
+                ? "text-xl font-semibold mb-2 text-gray-300 relative"
                 : "text-xl font-semibold mb-2"
             }
           >
             {title}
+            {completed && (
+              <button
+                className="absolute top-0 right-0 text-red-500 hover:text-red-700"
+                onClick={() => handleFadeOut(hideTodo, 500)}
+              >
+                <i className="far fa-solid fa-eye-slash text-white hover:text-red-700"></i>
+              </button>
+            )}
           </div>
-          <p className="text-gray-600">{description}</p>
+          <p className={completed ? "text-lg text-gray-300" : "text-lg"}>
+            {description}
+          </p>
           <div className="flex justify-end mt-4">
             {completed ? (
               <CongratsSpan />
@@ -100,7 +111,9 @@ function TodoItem({
                 </button>
                 <button
                   className="text-red-500 hover:text-red-700"
-                  onClick={handleDelete}
+                  onClick={() => handleFadeOut(
+                    deleteTodo, 500
+                  )}
                 >
                   <i className="far fa-trash-alt"></i>
                 </button>
