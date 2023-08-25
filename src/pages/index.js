@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TodoHeader from "./components/TodoHeader";
 import NewItem from "./components/NewItem";
 import Todos from "./components/Todos";
@@ -7,39 +7,27 @@ import FloatingPlusIcon from "./components/FloatingPlusIcon";
 export default function Home() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [todos, setTodos] = useState([
-    {
-      id: crypto.randomUUID(),
-      title: "Learn React",
-      description: "Learn the basics of React",
-      completed: false,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: "List Possible Talk Titles",
-      description:
-        "Come up with possible titles for the 51st Enablement Seminar.",
-      completed: false,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: "Feed the Cats and Dogs",
-      description: "",
-      completed: true,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: "Start chapter 5 of your story",
-      description: "",
-      completed: false,
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/todos")
+    .then((response) => response.json())
+    .then((data) => setTodos(data))
+    .catch((error) => console.error("Error fetching todos:", error));
+  }, []);
 
   const addTodo = () => {
-    setTodos([
-      ...todos,
-      { id: crypto.randomUUID(), title, description, completed: false },
-    ]);
+    const id = crypto.randomUUID()
+
+    fetch("/api/todos", {
+      method: "POST",
+      body: JSON.stringify({
+        id: id, title: title, description: description
+      }),
+    })
+    .then((response) => response.json())
+    .then((data) => setTodos(data))
+    .catch((error) => console.error("Error fetching todos:", error));
 
     setTitle("");
     setDescription("");
@@ -52,6 +40,10 @@ export default function Home() {
       )
     );
   };
+
+  const hideTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  }
 
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
@@ -77,6 +69,7 @@ export default function Home() {
             deleteTodo={deleteTodo}
             setTitle={setTitle}
             setDescription={setDescription}
+            hideTodo={hideTodo}
           />
         </div>
       </div>
