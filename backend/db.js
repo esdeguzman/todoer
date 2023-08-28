@@ -50,7 +50,7 @@ class db {
   }
 
   //INSERT DATA
-  async insertOne(data, fetchAllItems = false) {
+  async insertOne(data) {
     const jsonData = JSON.parse(data);
     const columns = Object.keys(jsonData).join(", ");
     const placeholders = Object.keys(jsonData)
@@ -66,17 +66,13 @@ class db {
         if (err) {
           reject(err);
         } else {
-          const message = `Successfully added ${res.rowCount} row.`;
-
-          if (fetchAllItems) {
-            try {
-              const allItems = await this.getAll();
-              resolve(allItems);
-            } catch (error) {
-              reject(error);
-            }
-          } else {
-            resolve(message);
+          try {
+            resolve({
+              status: 1,
+              message: `Successfully inserted ${res.rowCount} row.`,
+            });
+          } catch (error) {
+            reject(error);
           }
         }
         this.disconnect();
@@ -172,35 +168,81 @@ class db {
   }
 
   //UPDATE DATA
-  async update(id, column, value) {
+  async updateOne(data) {
+    const jsonData = JSON.parse(data);
+    const id = jsonData.id;
+    const columns = jsonData.columns;
+    const values = jsonData.values;
+
     let updateColumns;
     let updateValues;
 
-    if (Array.isArray(column)) {
-      if (!Array.isArray(value) || column.length !== value.length) {
-        throw new Error("Invalid column or value arrays");
+    if (Array.isArray(columns)) {
+      if (!Array.isArray(values) || columns.length !== values.length) {
+        throw new Error(
+          "Invalid column or value arrays OR column count does not match value count",
+        );
       }
 
-      updateColumns = column
+      if (id === undefined) {
+        throw new Error("ID is required to update an item.");
+      }
+
+      updateColumns = columns
         .map((col, index) => `${col} = $${index + 1}`)
         .join(", ");
-      updateValues = value;
+      updateValues = values;
     } else {
-      updateColumns = `${column} = $1`;
-      updateValues = [value];
+      updateColumns = `${columns} = $1`;
+      updateValues = [values];
     }
 
     const updateStatement = `UPDATE ${
       this.tableName
-    } SET ${updateColumns} WHERE id = $${updateValues.length + 1} RETURNING *`;
+    } SET ${updateColumns} WHERE id = $${updateValues.length + 1}`;
 
     return new Promise((resolve, reject) => {
       this.connect();
-      this.client.query(updateStatement, [...updateValues, id], (err, res) => {
+      this.client.query(
+        updateStatement,
+        [...updateValues, id],
+        async (err, res) => {
+          if (err) {
+            reject(err);
+          } else {
+            try {
+              resolve({
+                status: 1,
+                message: `Successfully updated ${res.rowCount} row.`,
+              });
+            } catch (error) {
+              reject(error);
+            }
+          }
+          this.disconnect();
+        },
+      );
+    });
+  }
+
+  //DELETE DATA
+  async deleteOne(id) {
+    const deleteQuery = `DELETE FROM ${this.tableName} WHERE id = '${id}'`;
+
+    return new Promise((resolve, reject) => {
+      this.connect();
+      this.client.query(deleteQuery, async (err, res) => {
         if (err) {
           reject(err);
         } else {
-          resolve(res.rows);
+          try {
+            resolve({
+              status: 1,
+              message: `Successfully deleted ${res.rowCount} row.`,
+            });
+          } catch (error) {
+            reject(error);
+          }
         }
         this.disconnect();
       });
