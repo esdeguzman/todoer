@@ -6,6 +6,7 @@ function TodoItem({
   title,
   description,
   completed,
+  hidden,
   completeTodo,
   deleteTodo,
   hideTodo,
@@ -41,6 +42,8 @@ function TodoItem({
   const checkCompletedStatus = () => {
     if (recentlyCompleted) {
       return "bg-green-500 p-4 rounded shadow-md bouncing-animation";
+    } else if (hidden) {
+      return "bg-gray-500 p-4 rounded shadow-md";
     } else if (completed) {
       return "bg-green-500 p-4 rounded shadow-md";
     } else {
@@ -81,16 +84,33 @@ function TodoItem({
           >
             {title}
             {completed && (
-              <button
-                className="absolute top-0 right-0 text-red-500 hover:text-red-700"
-                onClick={() => handleFadeOut(hideTodo, 500)}
-              >
-                <i className="far fa-solid fa-eye-slash text-white hover:text-red-700"></i>
-              </button>
+              <>
+                <div className="absolute top-0 right-0">
+                  <button
+                    className="text-red-500 hover:text-red-700 mr-2"
+                    onClick={() => handleFadeOut(hideTodo, 400)}
+                  >
+                    <i
+                      className={
+                        "far fa-solid fa-eye" +
+                        (hidden ? "" : "-slash") +
+                        " text-white hover:text-" +
+                        (hidden ? "green-700" : "red-700")
+                      }
+                    ></i>
+                  </button>
+                  <button
+                    className="text-white hover:text-red-700"
+                    onClick={() => handleFadeOut(deleteTodo, 500)}
+                  >
+                    <i className="fa fa-trash"></i>
+                  </button>
+                </div>
+              </>
             )}
           </div>
           <p className={completed ? "text-lg text-gray-300" : "text-lg"}>
-            {description}
+            {description ? description : "No specified description."}
           </p>
           <div className="flex justify-end mt-4">
             {completed ? (
@@ -111,9 +131,7 @@ function TodoItem({
                 </button>
                 <button
                   className="text-red-500 hover:text-red-700"
-                  onClick={() => handleFadeOut(
-                    deleteTodo, 500
-                  )}
+                  onClick={() => handleFadeOut(deleteTodo, 500)}
                 >
                   <i className="far fa-trash-alt"></i>
                 </button>
