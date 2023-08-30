@@ -8,6 +8,7 @@ function Todos({
   hideTodo,
   setTitle,
   setDescription,
+  updateTodo
 }) {
   return (
     <>
@@ -25,6 +26,7 @@ function Todos({
             hideTodo={hideTodo}
             setTitle={setTitle}
             setDescription={setDescription}
+            updateTodo={updateTodo}
           />
         ))
       ) : (
