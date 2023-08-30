@@ -10,5 +10,9 @@ const config = {
 };
 
 const todos = new db("todos", config);
+const users = new db("users", config)
 
-export default todos;
+export default {
+	todos,
+	users
+};
