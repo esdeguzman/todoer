@@ -65,3 +65,9 @@ body {
     display: none;
   }
 }
+
+@media (max-width: 640px) {
+  .login-container {
+    padding: 20px; /* Adjust the padding value as needed */
+  }
+}
