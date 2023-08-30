@@ -1,19 +1,56 @@
 import React, { useState } from 'react';
 
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function Login({setLoggedIn, filterTodos}) {
+  const [email, setEmail] = useState('test@mail.test');
+  const [password, setPassword] = useState('password');
 
-  const handleLogin = () => {
-    // Simulate a successful login by setting a session or token
-    // You can replace this with your actual authentication logic
-    console.log('Logged in successfully');
+  const customFont = {
+    fontFamily: "'Rubik', sans-serif",
   };
 
+  const login = (e) => {
+    e.preventDefault()
+
+    fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        action: "login"
+      })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      localStorage.setItem("todoer.token", data.token);
+      localStorage.setItem("todoer.user", JSON.stringify({
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        token: data.token
+      }));
+
+      fetch("/api/todos?user=" + data.id)
+      .then((response) => response.json())
+      .then((data) => {
+        filterTodos(data);
+      })
+      .catch((error) => console.error("Error fetching todos:", error));
+
+      setLoggedIn(true);
+    })
+    .catch((error) => console.error("Error fetching users:", error));
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-3xl font-semibold mb-6 text-center">Welcome Back!</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500 login-container">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md sm:p-12">
+        <h2 className="text-3xl font-semibold text-center">Todoer</h2>
+        <span
+          style={customFont}
+          className="mb-10 text-center text-sm font-normal block mt-1 uppercase"
+        >
+          Making little accomplishments count
+        </span>
         <form>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
@@ -21,6 +58,8 @@ function Login() {
               type="email"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-6">
@@ -29,11 +68,13 @@ function Login() {
               type="password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button
-            type="submit"
             className="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 focus:outline-none"
+            onClick={(e) => login(e)}
           >
             Log In
           </button>

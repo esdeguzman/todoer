@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CongratsSpan from "./CongratsSpan";
 
 function TodoItem({
@@ -12,17 +12,33 @@ function TodoItem({
   hideTodo,
   setTitle,
   setDescription,
+  updateTodo
 }) {
   const [recentlyCompleted, setRecentlyCompleted] = useState(false);
+  const [updatedTitle, setUpdatedTitle] = useState("");
+  const [updatedDescription, setUpdatedDescription] = useState("");
   const [fadeOut, setFadeOut] = useState("");
   const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    setUpdatedTitle(title);
+    setUpdatedDescription(description);
+  }, [])
 
   const handleEditClick = () => {
     setEditing(true);
   };
 
+  const handleSave = (e) => {
+    e.preventDefault();
+    updateTodo(id, updatedTitle, updatedDescription)
+    setEditing(false);
+  }
+
   const handleClose = () => {
     setEditing(false);
+    setUpdatedTitle(title);
+    setUpdatedDescription(description);
   };
 
   const handleComplete = () => {
@@ -58,19 +74,27 @@ function TodoItem({
           <input
             type="text"
             className="border rounded px-2 py-1 mb-2 w-full"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={updatedTitle}
+            onChange={(e) => setUpdatedTitle(e.target.value)}
           />
           <textarea
             className="border rounded px-2 py-1 mb-2 w-full"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={updatedDescription}
+            onChange={(e) => setUpdatedDescription(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1),)}
           ></textarea>
           <button
             className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 mr-2"
             onClick={handleClose}
           >
-            Close
+            Cancel
+          </button>
+          <button
+            className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-blue-700 mr-2"
+            onClick={(e) => {
+              handleSave(e)
+            }}
+          >
+            Save
           </button>
         </>
       ) : (
