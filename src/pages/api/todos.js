@@ -1,10 +1,13 @@
 // pages/api/todos.js
-import todos from "../../../backend/database";
+import database from "../../../backend/database";
+
+const {todos} = database;
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const todosFromDB = await todos.getAll("created_at", "DESC");
-    res.status(200).json([]);
+    const todosFromDB = await todos.query(`SELECT * FROM todos where user_id='${req.query.user}'`);
+
+    res.status(200).json(todosFromDB);
   } else if (req.method === "POST") {
     if (JSON.parse(req.body).env === "dev") {
       res.status(200).json([
@@ -99,6 +102,16 @@ export default async function handler(req, res) {
 
         res.status(200).json(items);
       }
+    }
+  } else if (req.method === "PUT") {
+    const jsonData = JSON.parse(req.body);
+
+    const TodosResponse = await todos.updateOne(req.body);
+
+    if (TodosResponse.status === 1) {
+      const items = await todos.query(`SELECT * FROM todos where user_id='${jsonData.user_id}'`);
+
+      res.status(200).json(items);
     }
   } else if (req.method === "PATCH") {
     const jsonData = JSON.parse(req.body);

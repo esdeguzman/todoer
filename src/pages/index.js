@@ -3,6 +3,7 @@ import TodoHeader from "./components/TodoHeader";
 import NewItem from "./components/NewItem";
 import Todos from "./components/Todos";
 import FloatingPlusIcon from "./components/FloatingPlusIcon";
+import Login from "./components/Login";
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -11,14 +12,22 @@ export default function Home() {
   const [todos, setTodos] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState("todo");
   const [filteredTodos, setFilteredTodos] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch("/api/todos")
+    if (JSON.parse(localStorage.getItem("todoer.user"))) {
+      setUser(JSON.parse(localStorage.getItem("todoer.user")))
+      setLoggedIn(true);
+
+      fetch("/api/todos?user=" + JSON.parse(localStorage.getItem("todoer.user")).id)
       .then((response) => response.json())
       .then((data) => {
         filterTodos(data);
       })
       .catch((error) => console.error("Error fetching todos:", error));
+    } else {
+      setLoggedIn(false);
+    }
   }, []);
 
   const filterTodos = (data) => {
@@ -48,6 +57,7 @@ export default function Home() {
         title: title,
         description: description,
         created_at: Date.now(),
+        user_id: user.id,
       }),
     })
       .then((response) => response.json())
@@ -56,6 +66,21 @@ export default function Home() {
 
     setTitle("");
     setDescription("");
+  };
+
+  const updateTodo = (updateId, updateTitle, updateDescription) => {
+    fetch("/api/todos", {
+      method: "PUT",
+      body: JSON.stringify({
+        id: updateId,
+        user_id: user.id,
+        columns: ["title", "description"],
+        values: [updateTitle, updateDescription],
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => filterTodos(data))
+      .catch((error) => console.error("Error fetching todos:", error));
   };
 
   const completeTodo = (id) => {
@@ -99,8 +124,9 @@ export default function Home() {
   };
 
   return (
-    <>
-      <TodoHeader />
+      loggedIn ?
+        <>
+      <TodoHeader setLoggedIn={setLoggedIn} />
 
       <div className="container mx-auto p-4">
         <NewItem
@@ -123,11 +149,14 @@ export default function Home() {
             setTitle={setTitle}
             setDescription={setDescription}
             hideTodo={hideTodo}
+            updateTodo={updateTodo}
           />
         </div>
       </div>
 
       <FloatingPlusIcon />
     </>
+    : 
+    <Login setLoggedIn={setLoggedIn} filterTodos={filterTodos} />
   );
 }
