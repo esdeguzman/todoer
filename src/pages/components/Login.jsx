@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 function Login({setLoggedIn, filterTodos}) {
-  const [email, setEmail] = useState('test@mail.test');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const customFont = {
     fontFamily: "'Rubik', sans-serif",
@@ -21,22 +21,26 @@ function Login({setLoggedIn, filterTodos}) {
     })
     .then((response) => response.json())
     .then((data) => {
-      localStorage.setItem("todoer.token", data.token);
-      localStorage.setItem("todoer.user", JSON.stringify({
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        token: data.token
-      }));
+      if (data.message == 'Invalid credentials') {
+        alert('Invalid credentials')
+      } else {
+        localStorage.setItem("todoer.token", data.token);
+        localStorage.setItem("todoer.user", JSON.stringify({
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          token: data.token
+        }));
 
-      fetch("/api/todos?user=" + data.id)
-      .then((response) => response.json())
-      .then((data) => {
-        filterTodos(data);
-      })
-      .catch((error) => console.error("Error fetching todos:", error));
+        fetch("/api/todos?user=" + data.id)
+        .then((response) => response.json())
+        .then((data) => {
+          filterTodos(data);
+        })
+        .catch((error) => console.error("Error fetching todos:", error));
 
-      setLoggedIn(true);
+        setLoggedIn(true);
+      }
     })
     .catch((error) => console.error("Error fetching users:", error));
   }
@@ -75,13 +79,14 @@ function Login({setLoggedIn, filterTodos}) {
           <button
             className="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 focus:outline-none"
             onClick={(e) => login(e)}
+            disabled={email.length === 0 || password.length === 0}
           >
             Log In
           </button>
         </form>
-        <p className="text-sm text-center mt-4">
+        {/* <p className="text-sm text-center mt-4">
           Don't have an account? <a href="#" className="text-blue-500 hover:underline">Sign Up</a>
-        </p>
+        </p> */}
       </div>
     </div>
   );
