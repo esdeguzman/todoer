@@ -45,8 +45,9 @@ function NewItem({ todos, title, description, setTitle, setDescription, addTodo,
       />
       <div className="relative">
         <button
-          className="add-btn mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+          className="add-btn mt-2 bg-blue-500 hover:from-blue-600 disabled:bg-gray-300 text-white py-2 px-4 rounded"
           onClick={() => addTodo(title)}
+          disabled={title.length === 0}
         >
           Add Todo Item
         </button>

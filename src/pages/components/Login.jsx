@@ -77,7 +77,7 @@ function Login({setLoggedIn, filterTodos}) {
             />
           </div>
           <button
-            className="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 focus:outline-none"
+            className="w-full py-2 text-white rounded-lg bg-blue-500 hover:from-blue-600 disabled:bg-gray-300"
             onClick={(e) => login(e)}
             disabled={email.length === 0 || password.length === 0}
           >
