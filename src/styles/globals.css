@@ -71,3 +71,7 @@ body {
     padding: 20px; /* Adjust the padding value as needed */
   }
 }
+
+button:disabled {
+  cursor: not-allowed;
+}
