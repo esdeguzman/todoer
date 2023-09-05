@@ -24,12 +24,12 @@ function Login({setLoggedIn, filterTodos}) {
       if (data.message == 'Invalid credentials') {
         alert('Invalid credentials')
       } else {
-        localStorage.setItem("todoer.token", data.token);
+        localStorage.setItem("todoer.token", data.session_token);
         localStorage.setItem("todoer.user", JSON.stringify({
           id: data.id,
           name: data.name,
           email: data.email,
-          token: data.token
+          token: data.session_token
         }));
 
         fetch("/api/todos?user=" + data.id)
