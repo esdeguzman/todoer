@@ -1,12 +1,5 @@
-// This is the starting point of a test suite.
-// The describe our test suite named "todo list".
 describe("todo list", () => {
-  //Inside the describe block, there's an it block. This represents an individual test case.
-  //The it function is used to define a specific test case with a description.
-  //In this case, the test case is named "shows the login page".
   it("shows the login page", () => {
-    //This line uses the cy.visit() command provided by Cypress to navigate to the
-    //URL "http://localhost:3000". It simulates a user visiting a web page.
     cy.visit("http://localhost:3000");
 
     //This Cypress code finds an <input> element with the attribute type set to "email" and checks 
@@ -55,4 +48,60 @@ describe("todo list", () => {
     //Checkout https://docs.cypress.io/api/commands/contains#Syntax for more info.
     cy.contains("Esme");
   });
+
+  it('can add new todo item', () => {
+    cy.visit("http://localhost:3000");
+    cy.get("input[type=email]").type("test@mail.test");
+    cy.get("input[type=password]").type("pasword");
+
+    //To add comment for later chapter
+    cy.intercept("POST", "/api/users", {
+      name: "Esme",
+      email: "test@mail.test",
+      password: "password",
+      session_token: "7ec26adf-e9a5-44f2-af35-2737f702cfec",
+      id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    });
+
+    cy.get("button").click();
+
+    cy.get('#title').type('Test todo')
+    cy.get('.add-btn').click()
+  })
+
+  it('can see completed todos', () => {
+    cy.visit("http://localhost:3000");
+    cy.get("input[type=email]").type("test@mail.test");
+    cy.get("input[type=password]").type("pasword");
+
+    //To add comment for later chapter
+    cy.intercept("POST", "/api/users", {
+      name: "Esme",
+      email: "test@mail.test",
+      password: "password",
+      session_token: "7ec26adf-e9a5-44f2-af35-2737f702cfec",
+      id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    });
+
+    cy.get("button").click();
+    cy.get('[name=todoFilter]').wait(1000).select('completed')
+  })
+
+  it('can see hidden todos', () => {
+    cy.visit("http://localhost:3000");
+    cy.get("input[type=email]").type("test@mail.test");
+    cy.get("input[type=password]").type("pasword");
+
+    //To add comment for later chapter
+    cy.intercept("POST", "/api/users", {
+      name: "Esme",
+      email: "test@mail.test",
+      password: "password",
+      session_token: "7ec26adf-e9a5-44f2-af35-2737f702cfec",
+      id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    });
+
+    cy.get("button").click();
+    cy.get('[name=todoFilter]').wait(1000).select('hidden')
+  })
 });
