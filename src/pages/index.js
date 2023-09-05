@@ -49,16 +49,17 @@ export default function Home() {
 
   const addTodo = () => {
     const id = crypto.randomUUID();
+    const body = {
+      id: id,
+      title: title,
+      description: description,
+      created_at: Date.now(),
+      user_id: JSON.parse(localStorage.getItem("todoer.user")).id,
+    }
 
     fetch("/api/todos", {
       method: "POST",
-      body: JSON.stringify({
-        id: id,
-        title: title,
-        description: description,
-        created_at: Date.now(),
-        user_id: user.id,
-      }),
+      body: JSON.stringify(body),
     })
       .then((response) => response.json())
       .then((data) => filterTodos(data))
@@ -73,7 +74,7 @@ export default function Home() {
       method: "PUT",
       body: JSON.stringify({
         id: updateId,
-        user_id: user.id,
+        user_id: JSON.parse(localStorage.getItem("todoer.user")).id,
         columns: ["title", "description"],
         values: [updateTitle, updateDescription],
       }),
