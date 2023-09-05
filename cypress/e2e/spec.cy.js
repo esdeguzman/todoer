@@ -10,6 +10,7 @@ describe("todo list", () => {
 
       //Do other tasks
 
+      //Here we use Chai expect() instead of .should since the elem is now a JQuery object
       //This is the same as cy.get("input[type=password]").should("have.text", "");
       expect(elem).to.have.text("");
       //If you want to use .should here, you can use the .wrap command like so,
