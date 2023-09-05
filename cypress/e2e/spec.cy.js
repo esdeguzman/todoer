@@ -1,11 +1,20 @@
 describe("todo list", () => {
-  it("shows the login page", () => {
+  it.only("shows the login page", () => {
     cy.visit("http://localhost:3000");
 
     //This Cypress code finds an <input> element with the attribute type set to "email" and checks 
     //if it has an empty text value using the .should("have.text", "") assertion.
     cy.get("input[type=email]").should("have.text", "");
-    cy.get("input[type=password]").should("have.text", "");
+
+    cy.get("input[type=password]").then((elem) => {
+
+      //Do other tasks
+
+      //This is the same as cy.get("input[type=password]").should("have.text", "");
+      expect(elem).to.have.text("");
+      //If you want to use .should here, you can use the .wrap command like so,
+      //cy.wrap(elem).should("have.text", "");
+    })
 
     //This Cypress code finds a "button" element on the webpage and gives it an alias name "loginButton" 
     //using the .as() method. This alias can be used later in your Cypress tests to refer to this specific button element easily.
