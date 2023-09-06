@@ -1,5 +1,5 @@
 describe("todo list", () => {
-  it.only("shows the login page", () => {
+  it("shows the login page", () => {
     cy.visit("http://localhost:3000");
 
     //This Cypress code finds an <input> element with the attribute type set to "email" and checks 
