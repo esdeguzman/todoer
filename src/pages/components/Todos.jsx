@@ -12,7 +12,7 @@ function Todos({
 }) {
   return (
     <>
-      {filteredTodos.length > 0 ? (
+      { filteredTodos?.length ? (
         filteredTodos.map((todo) => (
           <TodoItem
             key={todo.id}
