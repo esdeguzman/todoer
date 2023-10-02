@@ -9,7 +9,7 @@ pipeline {
                 git branch: 'chapter5', url: 'https://github.com/esdeguzman/todoer.git'
                 bat 'npm install'
                 bat 'npm update'
-                bat 'npm run cypress'
+                bat 'npm run %script%'
             }
         }
     }
